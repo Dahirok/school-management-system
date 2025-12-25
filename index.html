@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boqolsoon School Management</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Excel Support -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <!-- Firebase SDKs (Compat version for global compatibility) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+</head>
+
+<body>
+    <!-- Login Screen Overlay -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-card fade-in">
+            <div class="login-header">
+                <img src="logo.png" alt="Logo" class="login-logo">
+                <h2>Boqolsoon SMS</h2>
+                <p>Welcome back! Please login to continue.</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="login-username" class="form-input" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="login-password" class="form-input" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Login to
+                    Dashboard</button>
+            </form>
+            <div id="login-error" class="login-error hidden">Invalid username or password</div>
+        </div>
+    </div>
+
+    <div class="app-container hidden" id="main-app">
+        <!-- Mobile Toggle Box -->
+        <div class="mobile-toggle-bar">
+            <button id="mobile-sidebar-toggle" class="mobile-toggle-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="mobile-brand">Boqolsoon SMS</div>
+        </div>
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="brand">
+                <img src="logo.png" alt="Logo"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"> Boqolsoon SMS
+            </div>
+            <div class="nav-menu">
+                <a id="nav-dashboard" class="nav-item active">
+                    📊 Dashboard
+                </a>
+                <a id="nav-students" class="nav-item">
+                    👨‍🎓 Students
+                </a>
+                <a id="nav-academics" class="nav-item">
+                    📚 Academics
+                </a>
+                <a id="nav-staff" class="nav-item">
+                    👩‍🏫 Staff
+                </a>
+                <a id="nav-inbox" class="nav-item">
+                    📬 Inbox <span id="badge-messages" class="badge"></span>
+                </a>
+                <a id="nav-reports" class="nav-item">
+                    📑 Reports
+                </a>
+                <a id="nav-exams" class="nav-item">
+                    📝 Exams
+                </a>
+            </div>
+            <div style="margin-top:auto; padding:1rem 0; border-top:1px solid rgba(0,0,0,0.05);">
+                <button class="btn" style="width:100%; background:#fee2e2; color:#991b1b; font-size:0.8rem;"
+                    onclick="Auth.logout()">🚪 Logout</button>
+                <div style="margin-top:1rem; color:var(--text-muted); font-size:0.8rem; text-align:center;">
+                    &copy; 2025 Boqolsoon
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header (Banner Style) -->
+            <header class="header" style="margin:-2rem -2rem 2rem -2rem; padding: 0;">
+                <img src="header-banner.jpg" alt="Boqolsoon School Management System Header"
+                    style="width: 100%; height: auto; display: block; border-bottom: 4px solid #3498db;">
+            </header>
+
+            <!-- Toolbar / Breadcrumb -->
+            <div class="toolbar">
+                <button class="toolbar-item" onclick="Router.navigate('dashboard')">🏠 Setups</button>
+                <button class="toolbar-item" onclick="Router.navigate('students')">🎓 Student Transfer</button>
+                <button class="toolbar-item" onclick="Router.navigate('staff')">👥 Teachers</button>
+                <button class="toolbar-item" onclick="Router.navigate('exams')">📝 Exams</button>
+                <button class="toolbar-item" onclick="Router.navigate('dashboard')">📊 Dashboards</button>
+            </div>
+
+            <!-- VIEW: DASHBOARD -->
+            <section id="view-dashboard" class="view-section">
+                <div style="color: #1abc9c; margin-bottom: 1rem;">
+                    DASHBOARDS / <span style="font-weight:bold;">Students Dashboard</span>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card c-total">
+                        <div class="stat-icon">👤</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Students</div>
+                            <div id="stat-students" class="stat-value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card c-male">
+                        <div class="stat-icon">👨</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Male Students</div>
+                            <div id="stat-male" class="stat-value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card c-female">
+                        <div class="stat-icon">👩</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Female Students</div>
+                            <div id="stat-female" class="stat-value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card c-orphan">
+                        <div class="stat-icon">👶</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Orphan Students</div>
+                            <div id="stat-orphan" class="stat-value">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 style="text-align:center; color:var(--text-muted);">Students by Class</h3>
+                    <div class="bar-chart" id="dashboard-chart">
+                        <!-- JS populated -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: STUDENTS -->
+            <section id="view-students" class="view-section hidden">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                        <h2 style="margin:0;">Student Registration</h2>
+                        <button class="btn btn-sm" onclick="Router.navigate('dashboard')">← Back to Dashboard</button>
+                    </div>
+                    <form id="add-student-form">
+                        <!-- Personal Info -->
+                        <h3
+                            style="margin-bottom:1rem; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:0.5rem;">
+                            Personal Info</h3>
+                        <div class="registration-grid">
+                            <div class="form-group">
+                                <label class="form-label">Reg Number</label>
+                                <input type="text" name="regNumber" class="form-input"
+                                    placeholder="Auto-generated if empty">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Student Name</label>
+                                <input type="text" name="name" class="form-input" required placeholder="Full Name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mother Name</label>
+                                <input type="text" name="motherName" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select name="sex" class="form-input">
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Birth Date</label>
+                                <input type="date" name="dob" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Birth Place</label>
+                                <input type="text" name="birthPlace" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Telephone</label>
+                                <input type="tel" name="phone" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Disability Status</label>
+                                <select name="disability" class="form-input">
+                                    <option>No Disability</option>
+                                    <option>Hearing Impairment</option>
+                                    <option>Visual Impairment</option>
+                                    <option>Physical Disability</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Orphan Status</label>
+                                <select name="orphan" class="form-input">
+                                    <option>Not orphan</option>
+                                    <option>Father Only</option>
+                                    <option>Mother Only</option>
+                                    <option>Double Orphan</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label class="form-label">Student Photo</label>
+                                <input type="file" name="photo" class="form-input" accept="image/*">
+                                <small class="text-muted">Recommended: Square format, under 1MB</small>
+                            </div>
+                        </div>
+
+                        <!-- Contact Address -->
+                        <h3
+                            style="margin-bottom:1rem; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:0.5rem;">
+                            Contact & Address</h3>
+                        <div class="registration-grid">
+                            <div class="form-group">
+                                <label class="form-label">Guardian Name</label>
+                                <input type="text" name="guardianName" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Guardian Phone</label>
+                                <input type="tel" name="guardianPhone" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nationality</label>
+                                <input type="text" name="nationality" class="form-input" value="Somali">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Region (Gobolka)</label>
+                                <input type="text" name="region" class="form-input" value="Banadir">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">District (Degmada)</label>
+                                <input type="text" name="district" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Village (Xaafadda)</label>
+                                <input type="text" name="village" class="form-input">
+                            </div>
+                        </div>
+
+                        <!-- Enrollment -->
+                        <h3
+                            style="margin-bottom:1rem; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:0.5rem;">
+                            School Enrollment</h3>
+                        <div class="registration-grid">
+                            <div class="form-group">
+                                <label class="form-label">Class Name</label>
+                                <select name="className" class="form-input">
+                                    <option>Grade 1</option>
+                                    <option>Grade 2</option>
+                                    <option>Grade 3</option>
+                                    <option>Grade 4</option>
+                                    <option>Grade 5</option>
+                                    <option>Grade 6</option>
+                                    <option>Grade 7</option>
+                                    <option>Grade 8</option>
+                                    <option>Form 1</option>
+                                    <option>Form 2</option>
+                                    <option>Form 3</option>
+                                    <option>Form 4</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Reg Date</label>
+                                <input type="date" name="regDate" class="form-input" placeholder="Defaults to today">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-input">
+                                    <option>Active</option>
+                                    <option>Dropout</option>
+                                    <option>Transfer Out</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%;">Save Student Data</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2 style="margin-bottom:1rem;">Student List</h2>
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:1rem;">
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="text" placeholder="Search students..." class="form-input" style="width:200px;"
+                                onkeyup="Actions.filterStudents()">
+
+                            <select id="class-filter" class="form-input" style="width:150px;"
+                                onchange="Actions.filterStudents()">
+                                <option value="">All Classes</option>
+                                <option>Grade 1</option>
+                                <option>Grade 2</option>
+                                <option>Grade 3</option>
+                                <option>Grade 4</option>
+                                <option>Grade 5</option>
+                                <option>Grade 6</option>
+                                <option>Grade 7</option>
+                                <option>Grade 8</option>
+                                <option>Form 1</option>
+                                <option>Form 2</option>
+                                <option>Form 3</option>
+                                <option>Form 4</option>
+                            </select>
+                        </div>
+
+                        <div style="display:flex; gap:0.5rem;">
+                            <button class="btn" style="background:#fee2e2; color:#991b1b;"
+                                onclick="Actions.deleteAllStudents()">🗑️ Delete All</button>
+
+                            <button class="btn" style="background:#e0f2fe; color:#0369a1;"
+                                onclick="document.getElementById('import-file').click()">📂 Import CSV</button>
+                            <input type="file" id="import-file" style="display:none;" accept=".csv, .xlsx, .xls"
+                                onchange="Actions.importCSV(this)">
+
+                            <button class="btn" style="background:#dcfce7; color:#15803d;"
+                                onclick="Actions.exportCSV()">⬇️ Export CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Reg No</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Guardian</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-table-body">
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:1rem; border:1px dashed #cbd5e1; background: #f8fafc;">
+                    <h3 style="font-size:1rem; margin-bottom:0.5rem;">Import Instructions</h3>
+                    <p class="text-muted" style="font-size:0.9rem; margin-bottom:0.5rem;">
+                        You can upload <strong>.CSV</strong> or <strong>.XLSX (Excel)</strong> files. The system
+                        automatically detects the following columns:
+                    </p>
+                    <ul class="text-muted"
+                        style="font-size:0.9rem; list-style-type:disc; padding-left:1.5rem; margin-bottom:0.5rem;">
+                        <li><strong>Required:</strong> Name, Class</li>
+                        <li><strong>Optional:</strong> Reg Number, Guardian Name, Phone, Mother Name, Gender (Sex), DOB,
+                            Reg Date, Status, Region, District</li>
+                    </ul>
+                    <p class="text-muted" style="font-size:0.9rem;">
+                        <em>Tip: If 'Reg Number' or 'Reg Date' are missing, they will be auto-generated
+                            sequentially.</em>
+                    </p>
+                </div>
+            </section>
+
+            <!-- VIEW: STUDENT PROFILE -->
+            <section id="view-student-profile" class="view-section hidden">
+                <div id="student-profile-content"></div>
+            </section>
+
+            <!-- VIEW: INBOX -->
+            <section id="view-inbox" class="view-section hidden">
+                <h2 style="margin-bottom:1rem;">Inbox</h2>
+                <div id="inbox-container" class="message-list">
+                    <!-- JS Populated -->
+                </div>
+            </section>
+
+            <!-- View Placeholders -->
+            <section id="view-academics" class="view-section hidden">
+                <div class="card">
+                    <h2>Academics Module - Coming Soon</h2>
+                </div>
+            </section>
+            <!-- VIEW: STAFF -->
+            <section id="view-staff" class="view-section hidden">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                        <h2 style="margin:0;">Staff Management</h2>
+                        <button class="btn btn-sm" onclick="Router.navigate('dashboard')">← Back to Dashboard</button>
+                    </div>
+                    <form id="add-staff-form">
+                        <div class="registration-grid">
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="name" class="form-input" required
+                                    placeholder="e.g. Daahir Abuukar">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Role</label>
+                                <select name="role" class="form-input">
+                                    <option>Teacher</option>
+                                    <option>Head Teacher</option>
+                                    <option>Administrator</option>
+                                    <option>Support Staff</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" name="phone" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Education Level</label>
+                                <select id="staff-level-select" class="form-input"
+                                    onchange="Render.updateStaffSubjects()">
+                                    <option value="">-- Select Level --</option>
+                                    <option value="LowerPrimary">Lower Primary</option>
+                                    <option value="UpperPrimary">Upper Primary</option>
+                                    <option value="Secondary">Secondary</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label class="form-label">Subjects (Select Multiple)</label>
+                                <div id="staff-subjects-container" class="checkbox-group-container">
+                                    <p class="text-muted" style="font-size: 0.9rem;">-- Select Level First --</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Staff Member</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2 style="margin-bottom:1rem;">Staff Directory</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Phone</th>
+                                    <th>Subject</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staff-table-body">
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <section id="view-reports" class="view-section hidden">
+                <div class="card">
+                    <h2>Reports & Analytics - Coming Soon</h2>
+                </div>
+            </section>
+
+            <!-- VIEW: EXAMS -->
+            <section id="view-exams" class="view-section hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h2 class="text-primary">Exams Management</h2>
+                </div>
+
+                <div class="grid grid-2">
+                    <!-- 1. Selection Card -->
+                    <div class="card">
+                        <h3 style="border-bottom:1px solid #eee; padding-bottom:0.5rem; margin-bottom:1rem;">1. Select
+                            Exam Context</h3>
+                        <form onsubmit="event.preventDefault(); Render.examsEntry();">
+                            <div class="form-group" style="margin-bottom:1rem;">
+                                <label class="form-label">Class</label>
+                                <select id="exam-class-select" class="form-input">
+                                    <option value="">-- Select Class --</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:1rem;">
+                                <label class="form-label">Term / Semester</label>
+                                <select id="exam-term-select" class="form-input">
+                                    <option>Term 1</option>
+                                    <option>Term 2</option>
+                                    <option>Term 3</option>
+                                    <option>Term 4</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Load Mark Sheet</button>
+                        </form>
+                    </div>
+
+                    <!-- 2. Summary Card -->
+                    <div class="card">
+                        <h3 style="border-bottom:1px solid #eee; padding-bottom:0.5rem; margin-bottom:1rem;">Quick Stats
+                        </h3>
+                        <div
+                            style="background:#f0f9ff; padding:1rem; border-radius:8px; border-left:4px solid #3498db; margin-bottom:0.5rem;">
+                            <strong>Marks Entry Rule:</strong><br>
+                            T1 (10) + Mid (30) + T2 (10) + Final (60) = Total
+                        </div>
+                        <div
+                            style="background:#f0fdf4; padding:1rem; border-radius:8px; border-left:4px solid #2ecc71;">
+                            <strong>Grading:</strong><br>
+                            A (90+), B (80-89), C (70-79), D (60-69), F (<60) </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Mark Sheet Area -->
+                    <div id="marks-entry-container" class="card hidden" style="margin-top:2rem;">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                            <h3 id="marks-sheet-title">Marks Entry</h3>
+                            <button class="btn btn-primary" onclick="Actions.saveMarks()">💾 Save All Marks</button>
+                        </div>
+
+                        <div class="table-container" style="overflow-x:auto;">
+                            <table style="width:100%; min-width:1200px; border-collapse: separate; border-spacing: 0;">
+                                <thead>
+                                    <tr style="background:#f8fafc; text-align:left;">
+                                        <!-- JS Populated -->
+                                    </tr>
+                                </thead>
+                                <tbody id="marks-table-body">
+                                    <!-- JS Populated -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            </section>
+
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
