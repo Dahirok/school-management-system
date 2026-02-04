@@ -226,25 +226,25 @@
                     </div>
                 </div>
 
-                <!-- System Synchronization Audit (Hidden by default, shown if issues found) -->
+                <!-- System Sync Recovery (Diagnostic Tool) -->
                 <div id="dash-audit-section" class="card dash-card hidden"
-                    style="margin-top: 1.5rem; border: 1px dashed #e2e8f0; background: #fffcf0;">
+                    style="margin-top: 1.5rem; border: 2px solid #3b82f6; background: #eff6ff;">
                     <div class="card-header-flex"
                         style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                        <h3 style="margin:0; color: #856404;">🔍 System Synchronization Audit</h3>
+                        <h3 style="margin:0; color: #1e40af;">🔄 Sync Recovery: Missing Data Found</h3>
                         <span class="badge" id="dash-audit-count"
-                            style="background:#fef3c7; color:#92400e; padding:0.2rem 0.6rem; border-radius:12px; font-size:0.8rem; font-weight:bold;">0
-                            Issues</span>
+                            style="background:#dbeafe; color:#1e40af; padding:0.2rem 0.6rem; border-radius:12px; font-size:0.8rem; font-weight:bold;">0
+                            Items</span>
                     </div>
-                    <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1rem;">
-                        The following records exist online but were skipped locally because their <strong>School
-                            ID</strong> does not exactly match "boqolsoon".
-                        <br><em>Tip: Check for typos or casing (e.g. Boqolsoon vs boqolsoon) if these belong to your
-                            school.</em>
+                    <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1rem; color: #1e40af;">
+                        The following records were found online but were NOT added because of a <strong>Tag
+                            Error</strong>.
+                        <strong>If the Magaca/Name matches your student, please rename the school tag online to
+                            'boqolsoon'.</strong>
                     </p>
                     <div class="card-body p-0">
                         <table class="table table-sm" style="width:100%;">
-                            <thead style="background:#fef9e7; color:#856404;">
+                            <thead style="background:#dbeafe; color:#1e40af;">
                                 <tr>
                                     <th style="padding:0.5rem; text-align:left;">Resource</th>
                                     <th style="padding:0.5rem; text-align:left;">Name/ID</th>

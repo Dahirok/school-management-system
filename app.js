@@ -133,10 +133,16 @@ const Store = {
                     data.push({ id: doc.id, ...item });
                 } else {
                     skippedCount++;
-                    // Basic diagnostic: if it starts with 'boq', it might be a typo
-                    if (itemSchoolId.startsWith('boq')) {
+                    // Sync Recovery: Find items that belong to no school or have a typo (boqolson)
+                    const isPotentiallyOurs = !itemSchoolId || itemSchoolId.startsWith('boq') || itemSchoolId === '';
+                    if (isPotentiallyOurs) {
                         if (!Store.cache.skippedItems[key]) Store.cache.skippedItems[key] = [];
-                        Store.cache.skippedItems[key].push({ id: doc.id, name: item.name || item.subject || 'Unknown', schoolId: item.schoolId });
+                        Store.cache.skippedItems[key].push({
+                            id: doc.id,
+                            name: item.name || item.subject || 'Unnamed Record',
+                            schoolId: item.schoolId || '(MISSING)',
+                            error: !item.schoolId ? 'Missing School ID' : 'Mismatched ID'
+                        });
                     }
                 }
             });
@@ -266,10 +272,8 @@ const Render = {
                     studentTotal += avg;
                     studentMax += config.max;
 
-                    // Stricter check: Fail if average is low OR if any individual subject in this term is below threshold
-                    const anySubjectFail = termMarks.some(m => parseFloat(m.score) < config.pass);
-
-                    if (avg < config.pass || anySubjectFail) {
+                    // Standard Logic (Matches Online): Fail only if Term Average is < 50%
+                    if (avg < config.pass) {
                         hasFail = true;
                         if (!termFailures.includes(term)) termFailures.push(term);
                     }
