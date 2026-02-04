@@ -732,11 +732,6 @@ const Render = {
             })()}
             </div>
 
-                <!-- Footer -->
-                <div style="position: absolute; bottom: 20mm; left: 20mm; right: 20mm; text-align: center; border-top: 1px solid #bdc3c7; padding-top: 10px;">
-                    <p style="font-size: 12px; color: #95a5a6; margin: 0;">System Generated Report • ${Config.schoolName} Management System</p>
-                    <p style="font-size: 12px; color: #95a5a6; margin: 2px 0 0 0;">This document is valid without a signature.</p>
-                </div>
             </div>
         `;
     },
@@ -1406,6 +1401,51 @@ const Actions = {
 
         // Scroll to form
         form.scrollIntoView({ behavior: 'smooth' });
+    },
+
+    repairOnlineTags: async () => {
+        const skipped = Store.cache.skippedItems || {};
+        const allItems = [];
+        Object.keys(skipped).forEach(key => {
+            skipped[key].forEach(item => allItems.push({ ...item, collection: key }));
+        });
+
+        if (allItems.length === 0) return alert('No missing data found to repair.');
+
+        if (!confirm(`This will permanently reclaim ${allItems.length} records by tagging them as 'boqolsoon'. This will move them into your computer. Continue?`)) return;
+
+        const btn = document.getElementById('repair-all-btn');
+        const countSpan = document.getElementById('dash-audit-count');
+        const originalText = btn.innerText;
+        btn.disabled = true;
+
+        let repaired = 0;
+        const batchSize = 100;
+
+        try {
+            for (let i = 0; i < allItems.length; i += batchSize) {
+                const chunk = allItems.slice(i, i + batchSize);
+                const batch = db.batch();
+
+                chunk.forEach(item => {
+                    const docRef = db.collection(item.collection).doc(item.id.toString());
+                    batch.update(docRef, { schoolId: 'boqolsoon' });
+                });
+
+                await batch.commit();
+                repaired += chunk.length;
+                btn.innerText = `⏳ Repairing... ${repaired}/${allItems.length}`;
+            }
+
+            alert(`Success! ${repaired} records have been reclaimed. Dashboard will now refresh.`);
+            Store.cache.skippedItems = {}; // Clear diagnostic cache
+            location.reload();
+        } catch (err) {
+            console.error("Repair Error:", err);
+            alert("Error during repair: " + err.message);
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
     },
 
     deleteStudent: async (id) => {
