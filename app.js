@@ -111,7 +111,8 @@ const Store = {
             sex: true,
             total: true,
             avg: true
-        }
+        },
+        skippedItems: {} // Diagnostic tracking: { students: [...], marks: [...] }
     },
 
     get: (key) => Store.cache[key] || [],
@@ -132,6 +133,11 @@ const Store = {
                     data.push({ id: doc.id, ...item });
                 } else {
                     skippedCount++;
+                    // Basic diagnostic: if it starts with 'boq', it might be a typo
+                    if (itemSchoolId.startsWith('boq')) {
+                        if (!Store.cache.skippedItems[key]) Store.cache.skippedItems[key] = [];
+                        Store.cache.skippedItems[key].push({ id: doc.id, name: item.name || item.subject || 'Unknown', schoolId: item.schoolId });
+                    }
                 }
             });
 
@@ -286,6 +292,9 @@ const Render = {
             }
         });
 
+        // Trigger Audit Render if data changed
+        Render.syncAudit();
+
         // Update UI
         document.getElementById('dash-total-students').innerText = totalStudents;
         document.getElementById('dash-passed').innerText = passCount;
@@ -313,6 +322,36 @@ const Render = {
             if (alerts.length > 5) {
                 alertsBody.innerHTML += `<tr><td colspan="3" style="text-align:center; font-size:0.8rem; color:#64748b;">+${alerts.length - 5} more issues...</td></tr>`;
             }
+        }
+    },
+
+    syncAudit: () => {
+        const auditBody = document.getElementById('dash-audit-body');
+        if (!auditBody) return;
+
+        const allSkipped = [];
+        Object.keys(Store.cache.skippedItems).forEach(key => {
+            Store.cache.skippedItems[key].forEach(item => {
+                allSkipped.push({ ...item, type: key });
+            });
+        });
+
+        const auditSection = document.getElementById('dash-audit-section');
+        if (allSkipped.length > 0) {
+            auditSection.classList.remove('hidden');
+            auditBody.innerHTML = allSkipped.map(item => `
+                <tr style="font-size: 0.8rem; border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 0.5rem;">${item.type.toUpperCase()}</td>
+                    <td style="padding: 0.5rem; font-weight: 500;">${item.name}</td>
+                    <td style="padding: 0.5rem; color: #e74c3c;">"${item.schoolId}"</td>
+                    <td style="padding: 0.5rem; text-align: right;">
+                        <span class="badge bg-yellow-100 text-yellow-800" style="font-size: 0.65rem; padding: 2px 6px;">Mismatched Tag</span>
+                    </td>
+                </tr>
+            `).join('');
+            document.getElementById('dash-audit-count').innerText = `${allSkipped.length} Potential Issues`;
+        } else {
+            auditSection.classList.add('hidden');
         }
     },
 
