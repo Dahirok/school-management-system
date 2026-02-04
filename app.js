@@ -1134,7 +1134,19 @@ const Render = {
             return;
         }
 
-        const isAnnual = term === 'Annual';
+        const findMatchedMark = (sid, sub, t, y) => {
+            const normalizedSub = sub.toString().trim().toLowerCase();
+            const normalizedTerm = t.toString().trim().toLowerCase();
+            const normalizedYear = y.toString().trim().toLowerCase().replace(/\//g, '-');
+            const normalizedSid = sid.toString().trim();
+
+            return marks.find(m =>
+                (m.studentId || '').toString().trim() === normalizedSid &&
+                (m.subject || '').toString().trim().toLowerCase() === normalizedSub &&
+                (m.term || '').toString().trim().toLowerCase() === normalizedTerm &&
+                (m.year || '').toString().trim().toLowerCase().replace(/\//g, '-') === normalizedYear
+            );
+        };
 
         // Pre-calculate totals for sorting and ranking
         students.forEach(s => {
@@ -1143,11 +1155,11 @@ const Render = {
                 if (isAnnual) {
                     // Sum T1, T2, T3, T4
                     ['Term 1', 'Term 2', 'Term 3', 'Term 4'].forEach(t => {
-                        const rec = marks.find(m => m.studentId == s.id && m.subject === sub && m.term === t && m.year === currentYear);
+                        const rec = findMatchedMark(s.id, sub, t, currentYear);
                         total += parseFloat(rec?.score || 0);
                     });
                 } else {
-                    const record = marks.find(m => m.studentId == s.id && m.subject === sub && m.term === term && m.year === currentYear) || {};
+                    const record = findMatchedMark(s.id, sub, term, currentYear) || {};
                     total += parseFloat(record.score || 0);
                 }
             });
@@ -1176,7 +1188,7 @@ const Render = {
                 if (isAnnual) {
                     let sum = 0;
                     ['Term 1', 'Term 2', 'Term 3', 'Term 4'].forEach(t => {
-                        const rec = marks.find(m => m.studentId == s.id && m.subject === sub && m.term === t && m.year === currentYear);
+                        const rec = findMatchedMark(s.id, sub, t, currentYear);
                         if (rec && rec.score !== '') {
                             sum += parseFloat(rec.score);
                             subCount++;
@@ -1184,7 +1196,7 @@ const Render = {
                     });
                     score = sum || '';
                 } else {
-                    const record = marks.find(m => m.studentId == s.id && m.subject === sub && m.term === term && m.year === currentYear) || {};
+                    const record = findMatchedMark(s.id, sub, term, currentYear) || {};
                     score = (record.score !== undefined && record.score !== null) ? record.score : '';
                     if (score !== '') {
                         subCount++;
