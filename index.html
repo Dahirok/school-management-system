@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Boqolsoon School Management</title>
     <link rel="stylesheet" href="style.css">
     <!-- Fonts -->
@@ -87,10 +87,13 @@
                 </a>
             </div>
             <div style="margin-top:auto; padding:1rem 0; border-top:1px solid rgba(0,0,0,0.05);">
+                <button class="btn"
+                    style="width:100%; background:#f1f5f9; color:#475569; font-size:0.8rem; margin-bottom:0.5rem;"
+                    onclick="Actions.showChangePasswordModal()">🔑 Change Password</button>
                 <button class="btn" style="width:100%; background:#fee2e2; color:#991b1b; font-size:0.8rem;"
                     onclick="Auth.logout()">🚪 Logout</button>
                 <div style="margin-top:1rem; color:var(--text-muted); font-size:0.8rem; text-align:center;">
-                    &copy; 2025 Boqolsoon
+                    &copy; 2026 Boqolsoon
                 </div>
             </div>
         </nav>
@@ -103,169 +106,152 @@
                     style="width: 100%; height: auto; display: block; border-bottom: 4px solid #3498db;">
             </header>
 
-            <!-- Toolbar / Breadcrumb -->
             <div class="toolbar">
-                <button class="toolbar-item" onclick="Router.navigate('dashboard')">🏠 Setups</button>
-                <button class="toolbar-item" onclick="Router.navigate('students')">🎓 Student Transfer</button>
-                <button class="toolbar-item" onclick="Router.navigate('staff')">👥 Teachers</button>
-                <button class="toolbar-item" onclick="Router.navigate('exams')">📝 Exams</button>
-                <button class="toolbar-item" onclick="Router.navigate('dashboard')">📊 Dashboards</button>
+                <button class="toolbar-item" id="tb-dashboard" onclick="Router.navigate('dashboard')">📊
+                    Dashboard</button>
+                <button class="toolbar-item" id="tb-students" onclick="Router.navigate('students')">👨‍🎓
+                    Students</button>
+                <button class="toolbar-item" id="tb-academics" onclick="Router.navigate('academics')">📚
+                    Academics</button>
+                <button class="toolbar-item" id="tb-staff" onclick="Router.navigate('staff')">👩‍🏫 Staff</button>
+                <button class="toolbar-item" id="tb-inbox" onclick="Router.navigate('inbox')">📬 Inbox</button>
+                <button class="toolbar-item" id="tb-reports" onclick="Router.navigate('reports')">📑 Reports</button>
+                <button class="toolbar-item" id="tb-exams" onclick="Router.navigate('exams')">📝 Exams</button>
             </div>
 
             <!-- VIEW: DASHBOARD -->
             <section id="view-dashboard" class="view-section">
-                <div style="color: #1abc9c; margin-bottom: 1rem;">
-                    DASHBOARDS / <span style="font-weight:bold;">Students Dashboard</span>
+                <div class="dashboard-header"
+                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <div>
+                        <h2 style="margin:0; color:var(--text-color);">Teacher Dashboard</h2>
+                        <p class="text-muted" style="margin:0;">Overview for <span id="dash-teacher-name"
+                                style="font-weight:bold;">T. Name</span> | <span id="dash-term-display">Annual
+                                Assessment</span></p>
+                    </div>
+                    <div id="dash-date" class="text-muted"></div>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="stat-card c-total">
-                        <div class="stat-icon">👤</div>
-                        <div class="stat-info">
-                            <div class="stat-label">Total Students</div>
-                            <div id="stat-students" class="stat-value">0</div>
+                <div class="dashboard-grid"
+                    style="display:grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <!-- Profile Card -->
+                    <div class="card dash-card profile-card" style="text-align:center;">
+                        <div class="avatar-large" style="font-size:3rem; margin-bottom:0.5rem;">👨‍🏫</div>
+                        <h3 id="dash-profile-name" style="margin-bottom:0.2rem;">Teacher Name</h3>
+                        <p id="dash-profile-role" class="text-muted small">Class Teacher</p>
+                        <hr style="margin: 1rem 0; border:0; border-top:1px solid #eee;">
+                        <div class="dash-stat-row" style="display:flex; justify-content:space-around; text-align:left;">
+                            <div><strong style="display:block; font-size:0.8rem; color:#888;">Class</strong> <span
+                                    id="dash-class" style="font-weight:600;">...</span></div>
+                            <div><strong style="display:block; font-size:0.8rem; color:#888;">Subject</strong> <span
+                                    id="dash-subject" style="font-weight:600;">...</span></div>
                         </div>
                     </div>
-                    <div class="stat-card c-male">
-                        <div class="stat-icon">👨</div>
-                        <div class="stat-info">
-                            <div class="stat-label">Male Students</div>
-                            <div id="stat-male" class="stat-value">0</div>
-                        </div>
-                    </div>
-                    <div class="stat-card c-female">
-                        <div class="stat-icon">👩</div>
-                        <div class="stat-info">
-                            <div class="stat-label">Female Students</div>
-                            <div id="stat-female" class="stat-value">0</div>
-                        </div>
-                    </div>
-                    <div class="stat-card c-orphan">
-                        <div class="stat-icon">👶</div>
-                        <div class="stat-info">
-                            <div class="stat-label">Orphan Students</div>
-                            <div id="stat-orphan" class="stat-value">0</div>
+
+                    <!-- Main Stats -->
+                    <div class="card dash-card stats-card">
+                        <h3 style="margin-top:0;">Class Performance</h3>
+                        <div class="stats-grid"
+                            style="display:grid; grid-template-columns: repeat(4, 1fr); gap:1rem; margin-top:1rem;">
+                            <div class="stat-item"
+                                style="text-align:center; padding:1rem; background:#f8fafc; border-radius:8px;">
+                                <span class="stat-val" id="dash-total-students"
+                                    style="display:block; font-size:1.8rem; font-weight:bold; color:var(--primary);">0</span>
+                                <span class="stat-label" style="font-size:0.85rem; color:#64748b;">Students</span>
+                            </div>
+                            <div class="stat-item success"
+                                style="text-align:center; padding:1rem; background:#f0fdf4; border-radius:8px;">
+                                <span class="stat-val" id="dash-passed"
+                                    style="display:block; font-size:1.8rem; font-weight:bold; color:#16a34a;">0</span>
+                                <span class="stat-label" style="font-size:0.85rem; color:#16a34a;">Passed</span>
+                            </div>
+                            <div class="stat-item danger"
+                                style="text-align:center; padding:1rem; background:#fef2f2; border-radius:8px;">
+                                <span class="stat-val" id="dash-failed"
+                                    style="display:block; font-size:1.8rem; font-weight:bold; color:#dc2626;">0</span>
+                                <span class="stat-label" style="font-size:0.85rem; color:#dc2626;">Failed</span>
+                            </div>
+                            <div class="stat-item warning"
+                                style="text-align:center; padding:1rem; background:#fffbeb; border-radius:8px;">
+                                <span class="stat-val" id="dash-avg-score"
+                                    style="display:block; font-size:1.8rem; font-weight:bold; color:#d97706;">0%</span>
+                                <span class="stat-label" style="font-size:0.85rem; color:#d97706;">Avg Output</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="chart-container">
-                    <h3 style="text-align:center; color:var(--text-muted);">Students by Class</h3>
-                    <div class="bar-chart" id="dashboard-chart">
-                        <!-- JS populated -->
+                <div class="dashboard-grid-2" style="display:grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                    <!-- Alerts Panel -->
+                    <div class="card dash-card wide-card">
+                        <div class="card-header-flex"
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                            <h3 style="margin:0;">🚨 Attention Required</h3>
+                            <span class="badge badge-danger" id="dash-alert-count"
+                                style="background:#fee2e2; color:#b91c1c; padding:0.2rem 0.6rem; border-radius:12px; font-size:0.8rem; font-weight:bold;">0
+                                Issues</span>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm" style="width:100%; font-size:0.9rem;">
+                                <thead style="background:#f8fafc; color:#64748b;">
+                                    <tr>
+                                        <th style="padding:0.5rem; text-align:left;">Student</th>
+                                        <th style="padding:0.5rem; text-align:left;">Issue</th>
+                                        <th style="padding:0.5rem; text-align:right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dash-alerts-body">
+                                    <tr>
+                                        <td colspan="3" style="text-align:center; padding:2rem; color:#94a3b8;">No
+                                            alerts. Good job!</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card dash-card">
+                        <h3 style="margin-top:0;">Quick Actions</h3>
+                        <div class="action-buttons"
+                            style="display:flex; flex-direction:column; gap:0.8rem; margin-top:1rem;">
+                            <button class="btn btn-primary btn-block" onclick="Router.navigate('exams')">📝 Enter
+                                Marks</button>
+                            <button class="btn btn-secondary btn-block" onclick="Router.navigate('students')">👥 View
+                                Students</button>
+                            <button class="btn btn-outline btn-block"
+                                style="border:1px solid #cbd5e1; background:white; color:#334155;"
+                                onclick="alert('Feature coming soon!')">🖨️ Print Reports</button>
+                        </div>
                     </div>
                 </div>
             </section>
 
             <!-- VIEW: STUDENTS -->
             <section id="view-students" class="view-section hidden">
-                <div class="card">
+                <!-- Hiding Registration Form as requested -->
+                <div class="card" id="student-reg-card">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                         <h2 style="margin:0;">Student Registration</h2>
                         <button class="btn btn-sm" onclick="Router.navigate('dashboard')">← Back to Dashboard</button>
                     </div>
                     <form id="add-student-form">
-                        <!-- Personal Info -->
-                        <h3
-                            style="margin-bottom:1rem; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:0.5rem;">
-                            Personal Info</h3>
                         <div class="registration-grid">
+                            <!-- Section: Personal Info -->
                             <div class="form-group">
-                                <label class="form-label">Reg Number</label>
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="name" class="form-input" required
+                                    placeholder="e.g. Maxamed Cali">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Registration Number (Optional)</label>
                                 <input type="text" name="regNumber" class="form-input"
                                     placeholder="Auto-generated if empty">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Student Name</label>
-                                <input type="text" name="name" class="form-input" required placeholder="Full Name">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Mother Name</label>
-                                <input type="text" name="motherName" class="form-input" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Gender</label>
-                                <select name="sex" class="form-input">
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Birth Date</label>
-                                <input type="date" name="dob" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Birth Place</label>
-                                <input type="text" name="birthPlace" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Telephone</label>
-                                <input type="tel" name="phone" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Disability Status</label>
-                                <select name="disability" class="form-input">
-                                    <option>No Disability</option>
-                                    <option>Hearing Impairment</option>
-                                    <option>Visual Impairment</option>
-                                    <option>Physical Disability</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Orphan Status</label>
-                                <select name="orphan" class="form-input">
-                                    <option>Not orphan</option>
-                                    <option>Father Only</option>
-                                    <option>Mother Only</option>
-                                    <option>Double Orphan</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label class="form-label">Student Photo</label>
-                                <input type="file" name="photo" class="form-input" accept="image/*">
-                                <small class="text-muted">Recommended: Square format, under 1MB</small>
-                            </div>
-                        </div>
-
-                        <!-- Contact Address -->
-                        <h3
-                            style="margin-bottom:1rem; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:0.5rem;">
-                            Contact & Address</h3>
-                        <div class="registration-grid">
-                            <div class="form-group">
-                                <label class="form-label">Guardian Name</label>
-                                <input type="text" name="guardianName" class="form-input" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Guardian Phone</label>
-                                <input type="tel" name="guardianPhone" class="form-input" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Nationality</label>
-                                <input type="text" name="nationality" class="form-input" value="Somali">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Region (Gobolka)</label>
-                                <input type="text" name="region" class="form-input" value="Banadir">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">District (Degmada)</label>
-                                <input type="text" name="district" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Village (Xaafadda)</label>
-                                <input type="text" name="village" class="form-input">
-                            </div>
-                        </div>
-
-                        <!-- Enrollment -->
-                        <h3
-                            style="margin-bottom:1rem; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:0.5rem;">
-                            School Enrollment</h3>
-                        <div class="registration-grid">
-                            <div class="form-group">
-                                <label class="form-label">Class Name</label>
-                                <select name="className" class="form-input">
+                                <label class="form-label">Class / Grade</label>
+                                <select name="className" class="form-input" required>
+                                    <option value="">-- Select Class --</option>
                                     <option>Grade 1</option>
                                     <option>Grade 2</option>
                                     <option>Grade 3</option>
@@ -281,20 +267,79 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Reg Date</label>
-                                <input type="date" name="regDate" class="form-input" placeholder="Defaults to today">
+                                <label class="form-label">Date of Birth</label>
+                                <input type="date" name="dob" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Place of Birth</label>
+                                <input type="text" name="birthPlace" class="form-input" placeholder="e.g. Mogadishu">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender (Sex)</label>
+                                <select name="sex" class="form-input">
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mother's Name</label>
+                                <input type="text" name="motherName" class="form-input" placeholder="Full name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nationality</label>
+                                <input type="text" name="nationality" class="form-input" value="Somali">
+                            </div>
+
+                            <!-- Section: Guardian & Contact -->
+                            <div class="form-group">
+                                <label class="form-label">Guardian Name</label>
+                                <input type="text" name="guardianName" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Guardian Phone</label>
+                                <input type="tel" name="guardianPhone" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Student Phone (Optional)</label>
+                                <input type="tel" name="phone" class="form-input">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Status</label>
                                 <select name="status" class="form-input">
                                     <option>Active</option>
-                                    <option>Dropout</option>
-                                    <option>Transfer Out</option>
+                                    <option>Inactive</option>
+                                    <option>Graduated</option>
+                                    <option>Dropped</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <button type="submit" class="btn btn-primary" style="width:100%;">Save Student Data</button>
+                            <!-- Section: Address -->
+                            <div class="form-group">
+                                <label class="form-label">Region</label>
+                                <input type="text" name="region" class="form-input" placeholder="e.g. Banaadir">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">District</label>
+                                <input type="text" name="district" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Village</label>
+                                <input type="text" name="village" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Registration Date</label>
+                                <input type="date" name="regDate" class="form-input">
+                            </div>
+
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label class="form-label">Passport Photo</label>
+                                <input type="file" name="photo" class="form-input" accept="image/*">
+                            </div>
+                        </div>
+                        <div style="margin-top:1.5rem; display:flex; gap:1rem;">
+                            <button type="submit" class="btn btn-primary">Save Student Data</button>
+                            <button type="reset" class="btn">Clear Form</button>
+                        </div>
                     </form>
                 </div>
 
@@ -324,10 +369,7 @@
                             </select>
                         </div>
 
-                        <div style="display:flex; gap:0.5rem;">
-                            <button class="btn" style="background:#fee2e2; color:#991b1b;"
-                                onclick="Actions.deleteAllStudents()">🗑️ Delete All</button>
-
+                        <div style="display:flex; gap:0.5rem;" id="student-actions-btns">
                             <button class="btn" style="background:#e0f2fe; color:#0369a1;"
                                 onclick="document.getElementById('import-file').click()">📂 Import CSV</button>
                             <input type="file" id="import-file" style="display:none;" accept=".csv, .xlsx, .xls"
@@ -335,6 +377,22 @@
 
                             <button class="btn" style="background:#dcfce7; color:#15803d;"
                                 onclick="Actions.exportCSV()">⬇️ Export CSV</button>
+
+                            <button class="btn" id="release-selected-btn"
+                                style="background:#e0f2fe; color:#0369a1; display:none;"
+                                onclick="Actions.bulkToggleStudentExams(true)">👁️ Release Exams</button>
+
+                            <button class="btn" id="lock-selected-btn"
+                                style="background:#fef3c7; color:#92400e; display:none;"
+                                onclick="Actions.bulkToggleStudentExams(false)">🙈 Lock Exams</button>
+
+                            <button class="btn" id="sync-selected-btn"
+                                style="background:#f3f4f6; color:#1f2937; display:none;"
+                                onclick="Actions.bulkToggleStudentExams(null)">🔄 Sync to School</button>
+
+                            <button class="btn" id="delete-selected-btn"
+                                style="background:#fee2e2; color:#991b1b; display:none;"
+                                onclick="Actions.deleteSelectedStudents()">🗑️ Delete Selected</button>
                         </div>
                     </div>
 
@@ -342,13 +400,18 @@
                         <table>
                             <thead>
                                 <tr>
+                                    <th style="width:40px;">
+                                        <input type="checkbox" id="select-all-students"
+                                            onchange="Actions.toggleSelectAllStudents()">
+                                    </th>
                                     <th>Reg No</th>
                                     <th>Name</th>
                                     <th>Class</th>
                                     <th>Guardian</th>
                                     <th>Phone</th>
                                     <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Exams</th>
+                                    <th id="th-student-actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="students-table-body">
@@ -358,7 +421,8 @@
                     </div>
                 </div>
 
-                <div class="card" style="margin-top:1rem; border:1px dashed #cbd5e1; background: #f8fafc;">
+                <div class="card" id="student-import-instructions"
+                    style="margin-top:1rem; border:1px dashed #cbd5e1; background: #f8fafc;">
                     <h3 style="font-size:1rem; margin-bottom:0.5rem;">Import Instructions</h3>
                     <p class="text-muted" style="font-size:0.9rem; margin-bottom:0.5rem;">
                         You can upload <strong>.CSV</strong> or <strong>.XLSX (Excel)</strong> files. The system
@@ -390,10 +454,64 @@
                 </div>
             </section>
 
-            <!-- View Placeholders -->
+            <!-- VIEW: ACADEMICS -->
             <section id="view-academics" class="view-section hidden">
-                <div class="card">
-                    <h2>Academics Module - Coming Soon</h2>
+                <div class="card" style="margin-bottom:2rem;">
+                    <h2 style="margin-bottom:1rem;">Academics Configuration</h2>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1.5rem;">
+                        <!-- Add Class -->
+                        <div class="form-group">
+                            <label class="form-label">Add New Class</label>
+                            <form id="add-class-form" style="display:flex; gap:0.5rem;">
+                                <input type="text" name="className" class="form-input" placeholder="e.g. Grade 1"
+                                    required>
+                                <select name="classLevel" class="form-input" style="width:120px;">
+                                    <option value="LowerPrimary">L.Primary</option>
+                                    <option value="UpperPrimary">U.Primary</option>
+                                    <option value="Secondary">Secondary</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </form>
+                        </div>
+                        <!-- Add Subject -->
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label">Add New Subject</label>
+                            <div style="display:flex; gap:0.5rem;">
+                                <input type="text" id="new-subject-name" class="form-input" placeholder="e.g. Tarbiyo">
+                                <select id="academic-level-select" class="form-input" style="width:150px;">
+                                    <option value="LowerPrimary">Lower Primary</option>
+                                    <option value="UpperPrimary">Upper Primary</option>
+                                    <option value="Secondary">Secondary</option>
+                                </select>
+                                <button class="btn btn-primary" onclick="Actions.addSubjectToLevel()">Add
+                                    Subject</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1.5rem;" id="academics-levels-grid">
+                    <!-- JS Populated: Cards for LowerPrimary, UpperPrimary, Secondary -->
+                </div>
+
+                <!-- Database Migration Utility -->
+                <div class="card" style="margin-top:2rem; border: 1px solid #fee2e2; background: #fffcfc;">
+                    <h3 style="color: #991b1b; margin-bottom: 0.5rem;">System Database Migration</h3>
+                    <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        Use this utility to migrate all existing students and their marks to the new 1000-based ID
+                        system (e.g. ID 4 becomes 1004). This is a one-time setup action.
+                    </p>
+                    <button class="btn" style="background: #ef4444; color: white;" onclick="Actions.migrateTo1000()">
+                        🚀 Start Student ID Migration (1000+)
+                    </button>
+                    <button class="btn" style="background: #3498db; color: white; margin-left: 10px;"
+                        onclick="Actions.normalizeExistingData()">
+                        🧹 Normalize All Class Names (Class -> Grade)
+                    </button>
+                    <button class="btn" style="background: #10b981; color: white; margin-left: 10px;"
+                        onclick="Actions.tagExistingData()">
+                        🏷️ Tag All Existing Data as 'Boqolsoon'
+                    </button>
                 </div>
             </section>
             <!-- VIEW: STAFF -->
@@ -411,6 +529,16 @@
                                     placeholder="e.g. Daahir Abuukar">
                             </div>
                             <div class="form-group">
+                                <label class="form-label">Email / Username</label>
+                                <input type="email" name="email" class="form-input" required
+                                    placeholder="e.g. dahir@school.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input type="password" name="password" class="form-input" required
+                                    placeholder="••••••••">
+                            </div>
+                            <div class="form-group">
                                 <label class="form-label">Role</label>
                                 <select name="role" class="form-input">
                                     <option>Teacher</option>
@@ -423,15 +551,22 @@
                                 <label class="form-label">Phone</label>
                                 <input type="tel" name="phone" class="form-input" required>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Education Level</label>
-                                <select id="staff-level-select" class="form-input"
-                                    onchange="Render.updateStaffSubjects()">
-                                    <option value="">-- Select Level --</option>
-                                    <option value="LowerPrimary">Lower Primary</option>
-                                    <option value="UpperPrimary">Upper Primary</option>
-                                    <option value="Secondary">Secondary</option>
-                                </select>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label class="form-label">Education Level(s) - Select Multiple</label>
+                                <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="level" value="LowerPrimary"
+                                            onchange="Render.updateStaffSubjects()"> Lower Primary (G1-4)
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="level" value="UpperPrimary"
+                                            onchange="Render.updateStaffSubjects()"> Upper Primary (G5-8)
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" name="level" value="Secondary"
+                                            onchange="Render.updateStaffSubjects()"> Secondary (F1-4)
+                                    </label>
+                                </div>
                             </div>
                             <div class="form-group" style="grid-column: span 2;">
                                 <label class="form-label">Subjects (Select Multiple)</label>
@@ -442,28 +577,26 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Add Staff Member</button>
                     </form>
-                </div>
-
-                <div class="card">
-                    <h2 style="margin-bottom:1rem;">Staff Directory</h2>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Role</th>
-                                    <th>Phone</th>
-                                    <th>Subject</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="staff-table-body">
-                                <!-- JS Populated -->
-                            </tbody>
-                        </table>
+                    <div class="card" id="staff-table-card" style="margin-top:2rem;">
+                        <h3 style="margin-bottom:1rem;">Staff Directory</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Phone</th>
+                                        <th>Subject(s)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staff-table-body">
+                                    <!-- JS Populated -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
             </section>
             <section id="view-reports" class="view-section hidden">
                 <div class="card">
@@ -473,77 +606,163 @@
 
             <!-- VIEW: EXAMS -->
             <section id="view-exams" class="view-section hidden">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                    <h2 class="text-primary">Exams Management</h2>
-                </div>
+                <div id="exam-status-banner" style="display:none;"></div>
+                <div class="view-exams-layout">
+                    <!-- LEFT SIDEBAR: FILTERS -->
+                    <aside class="exams-sidebar">
+                        <div class="filter-box">
+                            <div class="filter-header">Search In ▾</div>
+                            <div class="filter-body">
+                                <input type="text" id="exam-search-input" placeholder="Search..." class="form-input"
+                                    style="width:100%;" onkeyup="Render.examsEntry()">
+                                <div style="margin-top:1rem;">
+                                    <label class="form-label">Student Reg No</label>
+                                    <input type="text" id="exam-reg-input" class="form-input" placeholder="Enter ID"
+                                        onkeyup="Render.examsEntry()">
+                                    <button class="btn btn-primary" onclick="Render.examsEntry()"
+                                        style="width:100%; margin-top:0.5rem;">Search</button>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="grid grid-2">
-                    <!-- 1. Selection Card -->
-                    <div class="card">
-                        <h3 style="border-bottom:1px solid #eee; padding-bottom:0.5rem; margin-bottom:1rem;">1. Select
-                            Exam Context</h3>
-                        <form onsubmit="event.preventDefault(); Render.examsEntry();">
-                            <div class="form-group" style="margin-bottom:1rem;">
-                                <label class="form-label">Class</label>
-                                <select id="exam-class-select" class="form-input">
-                                    <option value="">-- Select Class --</option>
-                                    <!-- Populated by JS -->
+                        <div class="filter-box">
+                            <div class="filter-header">Created At ▾</div>
+                            <div class="filter-body">
+                                <div class="checkbox-item"><input type="checkbox"> this year <span
+                                        id="count-this-year"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-box">
+                            <div class="filter-header">Academic Year ▾</div>
+                            <div class="filter-body" id="exam-year-filter-sidebar">
+                                <!-- JS Populated -->
+                            </div>
+                        </div>
+
+                        <!-- EXAM LOCK CONTAINER -->
+                        <div id="exam-lock-container"></div>
+
+                        <div class="filter-box">
+                            <div class="filter-header">Class Name ▾</div>
+                            <div class="filter-body">
+                                <!-- JS Populated -->
+                                <select class="form-input" id="exam-class-filter-sidebar">
+                                    <option value="">All Classes</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="margin-bottom:1rem;">
-                                <label class="form-label">Term / Semester</label>
-                                <select id="exam-term-select" class="form-input">
-                                    <option>Term 1</option>
-                                    <option>Term 2</option>
-                                    <option>Term 3</option>
-                                    <option>Term 4</option>
-                                </select>
+                        </div>
+
+                        <div class="filter-box">
+                            <div class="filter-header">Sex ▾</div>
+                            <div class="filter-body">
+                                <div class="checkbox-item"><input type="checkbox" id="filter-sex-female"
+                                        onchange="Render.examsEntry()"> Female <span id="count-female"></span></div>
+                                <div class="checkbox-item"><input type="checkbox" id="filter-sex-male"
+                                        onchange="Render.examsEntry()"> Male <span id="count-male"></span></div>
                             </div>
-                            <button type="submit" class="btn btn-primary" style="width:100%;">Load Mark Sheet</button>
-                        </form>
-                    </div>
-
-                    <!-- 2. Summary Card -->
-                    <div class="card">
-                        <h3 style="border-bottom:1px solid #eee; padding-bottom:0.5rem; margin-bottom:1rem;">Quick Stats
-                        </h3>
-                        <div
-                            style="background:#f0f9ff; padding:1rem; border-radius:8px; border-left:4px solid #3498db; margin-bottom:0.5rem;">
-                            <strong>Marks Entry Rule:</strong><br>
-                            T1 (10) + Mid (30) + T2 (10) + Final (60) = Total
                         </div>
-                        <div
-                            style="background:#f0fdf4; padding:1rem; border-radius:8px; border-left:4px solid #2ecc71;">
-                            <strong>Grading:</strong><br>
-                            A (90+), B (80-89), C (70-79), D (60-69), F (<60) </div>
-                        </div>
-                    </div>
+                    </aside>
 
-                    <!-- 3. Mark Sheet Area -->
-                    <div id="marks-entry-container" class="card hidden" style="margin-top:2rem;">
+                    <!-- MAIN AREA: TABS & GRID -->
+                    <div class="exams-main">
                         <div
-                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                            <h3 id="marks-sheet-title">Marks Entry</h3>
-                            <button class="btn btn-primary" onclick="Actions.saveMarks()">💾 Save All Marks</button>
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                            <div style="display:flex; gap:0.5rem;">
+                                <button class="btn" style="background:#1e293b; color:white;"
+                                    onclick="alert('Add New Exam Feature - Coming Soon')">Add new</button>
+                                <button class="btn" style="background:var(--danger); color:white;"
+                                    onclick="alert('Inline Add Feature - Coming Soon')">Inline Add</button>
+                            </div>
+                            <div class="text-muted small" id="exam-stats-text">Displaying 0 of 0</div>
                         </div>
 
-                        <div class="table-container" style="overflow-x:auto;">
-                            <table style="width:100%; min-width:1200px; border-collapse: separate; border-spacing: 0;">
-                                <thead>
-                                    <tr style="background:#f8fafc; text-align:left;">
+                        <!-- Year Tabs -->
+                        <div class="year-tabs" id="exam-year-tabs">
+                            <!-- JS Populated -->
+                            <button class="year-tab active">Exams: 2025-2026 <span id="tab-count-1"></span></button>
+                            <button class="year-tab">Exams: 2023/2024 <span id="tab-count-2"></span></button>
+                            <button class="year-tab">Exams: 2022/2023 <span id="tab-count-3"></span></button>
+                            <button class="year-tab" style="background:var(--primary);">All Exams
+                                <span id="tab-count-all"></span></button>
+                        </div>
+
+                        <div class="card">
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                                <h3 id="marks-sheet-title">Marks Entry</h3>
+                                <div style="display:flex; gap:0.5rem;">
+                                    <select id="exam-term-select" class="form-input" style="width:120px;"
+                                        onchange="Render.examsEntry()">
+                                        <option>Term 1</option>
+                                        <option>Term 2</option>
+                                        <option>Term 3</option>
+                                        <option>Term 4</option>
+                                        <option>Annual</option>
+                                    </select>
+                                    <div class="dropdown">
+                                        <button class="btn" style="background:#475569; color:white; padding:0.5rem;"
+                                            onclick="document.getElementById('col-vis-menu').classList.toggle('show')"
+                                            title="Column Visibility">
+                                            <span style="font-size:1.2rem;">≡▾</span>
+                                        </button>
+                                        <div id="col-vis-menu" class="dropdown-content">
+                                            <!-- JS Populated in Render.exams -->
+                                        </div>
+                                    </div>
+                                    <button class="btn" style="background:#e2e8f0; color:#475569;"
+                                        onclick="Actions.printSelected()">🖨️ Print Selected</button>
+                                    <button class="btn btn-primary" onclick="Actions.saveMarks()">💾 Save All
+                                        Marks</button>
+                                </div>
+                            </div>
+
+                            <div class="table-container">
+                                <table class="mark-table" style="width:100%; min-width:1400px;">
+                                    <thead>
+                                        <tr id="marks-table-header">
+                                            <!-- JS Populated -->
+                                        </tr>
+                                    </thead>
+                                    <tbody id="marks-table-body">
                                         <!-- JS Populated -->
-                                    </tr>
-                                </thead>
-                                <tbody id="marks-table-body">
-                                    <!-- JS Populated -->
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
+                </div>
             </section>
 
         </main>
     </div>
+    <!-- Change Password Modal -->
+    <div id="password-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width:400px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 style="margin:0;">🔒 Change Password</h3>
+                <button class="btn-sm" onclick="Actions.closePasswordModal()">&times;</button>
+            </div>
+            <form id="change-password-form">
+                <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" id="old-pass" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" id="new-pass" class="form-input" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" id="confirm-pass" class="form-input" required minlength="6">
+                </div>
+                <div id="password-error" class="text-danger small hidden" style="margin-bottom:1rem;"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Update Password</button>
+            </form>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 

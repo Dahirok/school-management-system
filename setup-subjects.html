@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Setup Default Subjects</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+    <h1>Setup Default Subjects</h1>
+    <p>Click the button below to add all default subjects to your Academics configuration.</p>
+    <button onclick="setupSubjects()"
+        style="padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+        Add All Default Subjects
+    </button>
+    <div id="status" style="margin-top: 20px; font-weight: bold;"></div>
+
+    <script>
+        // Firebase Configuration (same as your app.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYuZWVBNXlNOdXLRJCvwTOLIJOJwmPCkc",
+            authDomain: "boqolsoon-sms.firebaseapp.com",
+            projectId: "boqolsoon-sms",
+            storageBucket: "boqolsoon-sms.firebasestorage.app",
+            messagingSenderId: "1007074056146",
+            appId: "1:1007074056146:web:f6e8e4e1e4e5e5e5e5e5e5"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const defaultSubjects = {
+            LowerPrimary: ['Tarbiyo', 'Seynis', 'C.B', 'Carabi', 'Somali', 'Xisaab', 'English'],
+            UpperPrimary: ['Tarbiyo', 'Seynis', 'C.B', 'Carabi', 'Somali', 'Xisaab', 'English', 'Technology'],
+            Secondary: ['Tarbiyo', 'Biology', 'Geography', 'Carabi', 'Somali', 'Xisaab', 'English', 'Physics', 'Business', 'Technology', 'Chemistry', 'History']
+        };
+
+        async function setupSubjects() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = 'Adding subjects...';
+            statusDiv.style.color = 'blue';
+
+            try {
+                let count = 0;
+                for (const [level, subjects] of Object.entries(defaultSubjects)) {
+                    for (const subjectName of subjects) {
+                        const id = `${level}_${subjectName}`.replace(/\s+/g, '_');
+                        await db.collection('subjects').doc(id).set({
+                            id: id,
+                            name: subjectName,
+                            level: level
+                        });
+                        count++;
+                    }
+                }
+                statusDiv.textContent = `✅ Success! Added ${count} subjects to Firestore. You can now close this page and refresh your main app.`;
+                statusDiv.style.color = 'green';
+            } catch (error) {
+                statusDiv.textContent = `❌ Error: ${error.message}`;
+                statusDiv.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+
+</html>
