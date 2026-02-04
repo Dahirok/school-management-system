@@ -1134,11 +1134,13 @@ const Render = {
             return;
         }
 
+        const isAnnual = term === 'Annual';
+
         const findMatchedMark = (sid, sub, t, y) => {
-            const normalizedSub = sub.toString().trim().toLowerCase();
-            const normalizedTerm = t.toString().trim().toLowerCase();
-            const normalizedYear = y.toString().trim().toLowerCase().replace(/\//g, '-');
-            const normalizedSid = sid.toString().trim();
+            const normalizedSub = (sub || '').toString().trim().toLowerCase();
+            const normalizedTerm = (t || '').toString().trim().toLowerCase();
+            const normalizedYear = (y || '').toString().trim().toLowerCase().replace(/\//g, '-');
+            const normalizedSid = (sid || '').toString().trim();
 
             return marks.find(m =>
                 (m.studentId || '').toString().trim() === normalizedSid &&
