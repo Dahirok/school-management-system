@@ -2777,7 +2777,7 @@ const Auth = {
 
         // Sidebar Navigation visibility (Head/Admin vs Teacher)
         // Teachers see basic nav, Admins see everything
-        const headOnlyNav = ['nav-staff', 'nav-reports', 'nav-academics'];
+        const headOnlyNav = ['nav-staff', 'nav-reports', 'nav-academics', 'nav-recovery'];
         headOnlyNav.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.display = isHead ? 'flex' : 'none';

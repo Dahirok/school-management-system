@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Boqolsoon School Management</title>
+    <title>Boqolsoon School Management [VERSION 2.2]</title>
     <link rel="stylesheet" href="style.css">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +18,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 
-<body>
+<body style="border-top: 10px solid #e11d48;">
+    <div
+        style="background:#e11d48; color:white; padding:10px; text-align:center; position:sticky; top:0; z-index:10000; font-weight:bold;">
+        ⚠️ VERSION 2.2 ACTIVE - USE "🚨 RECOVER" IN SIDEBAR
+    </div>
     <!-- Login Screen Overlay -->
     <div id="login-overlay" class="login-overlay">
         <div class="login-card fade-in">
@@ -84,6 +88,10 @@
                 </a>
                 <a id="nav-exams" class="nav-item">
                     📝 Exams
+                </a>
+                <a id="nav-recovery" class="nav-item" style="color:#e11d48; font-weight:bold; display:none;"
+                    onclick="Actions.repairOnlineTags()">
+                    🚨 RECOVER LOST DATA
                 </a>
             </div>
             <div style="margin-top:auto; padding:1rem 0; border-top:1px solid rgba(0,0,0,0.05);">
