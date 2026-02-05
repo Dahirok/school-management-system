@@ -135,8 +135,8 @@ const Store = {
                     data.push({ id: doc.id, ...item });
                 } else {
                     skippedCount++;
-                    // Sync Recovery: Find items that belong to no school or have a typo (boqolson)
-                    const isPotentiallyOurs = !itemSchoolId || itemSchoolId.startsWith('boq') || itemSchoolId === '';
+                    // Sync Recovery: Find items that belong to no school or have common previous tags
+                    const isPotentiallyOurs = !itemSchoolId || itemSchoolId.startsWith('boq') || itemSchoolId === '' || itemSchoolId === 'ifiye';
                     if (isPotentiallyOurs) {
                         if (!Store.cache.skippedItems[key]) Store.cache.skippedItems[key] = [];
                         Store.cache.skippedItems[key].push({
