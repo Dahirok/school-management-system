@@ -126,6 +126,8 @@ const Store = {
         db.collection(key).onSnapshot(snapshot => {
             const data = [];
             let skippedCount = 0;
+            // Clear previous skipped items for THIS key to avoid accumulation
+            Store.cache.skippedItems[key] = [];
 
             snapshot.forEach(doc => {
                 const item = doc.data();
@@ -135,17 +137,13 @@ const Store = {
                     data.push({ id: doc.id, ...item });
                 } else {
                     skippedCount++;
-                    // Sync Recovery: Find items that belong to no school or have common previous tags
-                    const isPotentiallyOurs = !itemSchoolId || itemSchoolId.startsWith('boq') || itemSchoolId === '' || itemSchoolId === 'ifiye';
-                    if (isPotentiallyOurs) {
-                        if (!Store.cache.skippedItems[key]) Store.cache.skippedItems[key] = [];
-                        Store.cache.skippedItems[key].push({
-                            id: doc.id,
-                            name: item.name || item.subject || 'Unnamed Record',
-                            schoolId: item.schoolId || '(MISSING)',
-                            error: !item.schoolId ? 'Missing School ID' : 'Mismatched ID'
-                        });
-                    }
+                    // Catch all items not matching THIS school for recovery
+                    Store.cache.skippedItems[key].push({
+                        id: doc.id,
+                        name: item.name || item.name_so || item.subject || 'Unnamed Record',
+                        schoolId: item.schoolId || '(MISSING)',
+                        error: !item.schoolId ? 'Missing School ID' : 'Mismatched ID'
+                    });
                 }
             });
 
@@ -222,7 +220,15 @@ const Render = {
     dashboard: async () => {
         const user = Auth.user || { name: 'Guest', role: 'teacher' };
         document.getElementById('dash-teacher-name').innerText = user.name;
-        document.getElementById('dash-date').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const dateEl = document.getElementById('dash-date');
+        if (dateEl) {
+            dateEl.innerHTML = `
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn btn-sm" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:4px 10px; border-radius:4px; cursor:pointer;" onclick="location.reload()">🔄 Refresh Sync</button>
+                    <span>${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+            `;
+        }
 
         // Profile Data
         const isAdmin = user.role === 'head_teacher' || user.role === 'administrator';
