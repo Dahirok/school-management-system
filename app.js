@@ -17,7 +17,9 @@ const firebaseConfig = {
 // --- MULTI-SCHOOL CONFIG ---
 const Config = {
     schoolId: 'boqolsoon', // Unique ID for this application instance
-    schoolName: 'Boqolsoon School'
+    schoolName: 'Boqolsoon School Management System',
+    currency: 'USD',
+    gradeSystem: 'standard'
 };
 
 // Initialize Firebase (Compat)
@@ -2363,10 +2365,7 @@ const Actions = {
                     <thead><tr>${tableHeader}</tr></thead>
                     <tbody>${tableRows}</tbody>
                 </table>
-                <div class="footer">
-                    <div class="sig-line">Class Teacher Signature</div>
-                    <div class="sig-line">Head Teacher Signature</div>
-                </div>
+                <!-- Signatures Removed -->
             </body>
             </html>
         `;
