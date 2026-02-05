@@ -228,7 +228,7 @@ const Render = {
                         <button class="btn btn-sm" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:4px 10px; border-radius:4px; cursor:pointer;" onclick="location.reload()">🔄 Refresh Sync</button>
                         <span>${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                     </div>
-                    <small style="color:#94a3b8; font-size:0.7rem;">System Version: 2.1 (Sync Recovery Active)</small>
+                    <small style="color:#94a3b8; font-size:0.7rem;">System Version: 2.2 (Sync Recovery Active)</small>
                 </div>
             `;
         }
