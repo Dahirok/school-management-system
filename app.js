@@ -349,19 +349,26 @@ const Render = {
         });
 
         const auditSection = document.getElementById('dash-audit-section');
-        if (allSkipped.length > 0) {
+        const isHead = Auth.user && (Auth.user.role === 'head_teacher' || Auth.user.role === 'administrator');
+
+        if (isHead) {
             auditSection.classList.remove('hidden');
-            auditBody.innerHTML = allSkipped.map(item => `
-                <tr style="font-size: 0.8rem; border-bottom: 1px solid #f1f5f9;">
-                    <td style="padding: 0.5rem;">${item.type.toUpperCase()}</td>
-                    <td style="padding: 0.5rem; font-weight: 500;">${item.name}</td>
-                    <td style="padding: 0.5rem; color: #e74c3c;">"${item.schoolId}"</td>
-                    <td style="padding: 0.5rem; text-align: right;">
-                        <span class="badge bg-yellow-100 text-yellow-800" style="font-size: 0.65rem; padding: 2px 6px;">Mismatched Tag</span>
-                    </td>
-                </tr>
-            `).join('');
-            document.getElementById('dash-audit-count').innerText = `${allSkipped.length} Potential Issues`;
+            if (allSkipped.length > 0) {
+                auditBody.innerHTML = allSkipped.map(item => `
+                    <tr style="font-size: 0.8rem; border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 0.5rem;">${item.type.toUpperCase()}</td>
+                        <td style="padding: 0.5rem; font-weight: 500;">${item.name}</td>
+                        <td style="padding: 0.5rem; color: #e74c3c;">"${item.schoolId}"</td>
+                        <td style="padding: 0.5rem; text-align: right;">
+                            <span class="badge" style="background:#fee2e2; color:#b91c1c; font-size: 0.65rem; padding: 2px 6px;">Wrong Tag</span>
+                        </td>
+                    </tr>
+                `).join('');
+                document.getElementById('dash-audit-count').innerText = `${allSkipped.length} Potential Issues`;
+            } else {
+                auditBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:#64748b;">🔍 Searching for lost records... (None found yet)</td></tr>`;
+                document.getElementById('dash-audit-count').innerText = `0 Items`;
+            }
         } else {
             auditSection.classList.add('hidden');
         }
