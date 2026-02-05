@@ -223,9 +223,12 @@ const Render = {
         const dateEl = document.getElementById('dash-date');
         if (dateEl) {
             dateEl.innerHTML = `
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <button class="btn btn-sm" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:4px 10px; border-radius:4px; cursor:pointer;" onclick="location.reload()">🔄 Refresh Sync</button>
-                    <span>${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button class="btn btn-sm" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:4px 10px; border-radius:4px; cursor:pointer;" onclick="location.reload()">🔄 Refresh Sync</button>
+                        <span>${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    </div>
+                    <small style="color:#94a3b8; font-size:0.7rem;">System Version: 2.1 (Sync Recovery Active)</small>
                 </div>
             `;
         }
@@ -352,7 +355,9 @@ const Render = {
         const isHead = Auth.user && (Auth.user.role === 'head_teacher' || Auth.user.role === 'administrator');
 
         if (isHead) {
+            auditSection.style.display = 'block'; // Force visibility
             auditSection.classList.remove('hidden');
+
             if (allSkipped.length > 0) {
                 auditBody.innerHTML = allSkipped.map(item => `
                     <tr style="font-size: 0.8rem; border-bottom: 1px solid #f1f5f9;">
@@ -366,11 +371,11 @@ const Render = {
                 `).join('');
                 document.getElementById('dash-audit-count').innerText = `${allSkipped.length} Potential Issues`;
             } else {
-                auditBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:#64748b;">🔍 Searching for lost records... (None found yet)</td></tr>`;
+                auditBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:#64748b;">🔍 Searching for records... (If students are missing, use Refresh Sync button)</td></tr>`;
                 document.getElementById('dash-audit-count').innerText = `0 Items`;
             }
         } else {
-            auditSection.classList.add('hidden');
+            auditSection.style.display = 'none';
         }
     },
 
